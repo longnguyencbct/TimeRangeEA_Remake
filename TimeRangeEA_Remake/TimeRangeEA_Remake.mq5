@@ -11,6 +11,7 @@
 #include "GlobalVar.mqh"
 #include "Helper.mqh"
 #include "CustomFunct.mqh"
+#include "CustomCriteria.mqh"
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
@@ -22,7 +23,7 @@ int OnInit()
    // set magicnumber
    trade.SetExpertMagicNumber(InpMagicNumber);
    
-   //calculated new range if inputs changed
+   //calculated new Range if inputs changed
    if(_UninitReason==REASON_PARAMETERS&&CountOpenPosition()==0){//no position open++
       CalculateRange();
    }
@@ -37,7 +38,7 @@ int OnInit()
 void OnDeinit(const int reason)
 {
    // delete objects
-   ObjectsDeleteAll(NULL,"range");
+   ObjectsDeleteAll(NULL,"Range");
 }
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
@@ -48,40 +49,40 @@ void OnTick()
   prevTick = lastTick;
   SymbolInfoTick(_Symbol,lastTick);
   
-  // range calculation
-  if(lastTick.time>=range.start_time&&lastTick.time<range.end_time){
+  // Range calculation
+  if(lastTick.time>=Range.start_time&&lastTick.time<Range.end_time){
    // set flag
-   range.f_entry=true;
+   Range.f_entry=true;
    // new high
-   if(lastTick.ask>range.high){
-      range.high=lastTick.ask;
-      mid=(range.high+range.low)/2;
+   if(lastTick.ask>Range.high){
+      Range.high=lastTick.ask;
+      mid=(Range.high+Range.low)/2;
       DrawObjects();
    }
    // new low
-   if(lastTick.bid<range.low){
-      range.low=lastTick.bid;
-      mid=(range.high+range.low)/2;
+   if(lastTick.bid<Range.low){
+      Range.low=lastTick.bid;
+      mid=(Range.high+Range.low)/2;
       DrawObjects();
    }
    double cp=(lastTick.ask+lastTick.bid)/2;
    
-   range.lower=  mid+(cp-mid)*InpChangingRangeAmplifier/100       -(range.high-range.low)/2;
-   range.upper=  mid+(cp-mid)*InpChangingRangeAmplifier/100       +(range.high-range.low)/2;
+   Range.lower=  mid+(cp-mid)*InpChangingRangeAmplifier/100       -(Range.high-Range.low)/2;
+   Range.upper=  mid+(cp-mid)*InpChangingRangeAmplifier/100       +(Range.high-Range.low)/2;
    //DrawObjects();
   }
-  if(lastTick.time==range.end_time){
+  if(lastTick.time==Range.end_time){
       DrawObjects();
   }
   // close position
-  if(InpRangeClose>=0&&lastTick.time>=range.close_time){
+  if(InpRangeClose>=0&&lastTick.time>=Range.close_time){
    if(!ClosePositions()){return;}
   }
-  //calculate new range if ...
-  if((InpRangeClose>=0&&lastTick.time>=range.close_time)                      // close time reached
-      ||(range.f_high_breakout&&range.f_low_breakout)                         // both breakout flags are true
-      ||(range.end_time==0)                                                   // range not calculated yet
-      ||((range.end_time!=0&&lastTick.time>range.end_time&&!range.f_entry)   //there was a range calculated but no tick inside
+  //calculate new Range if ...
+  if((InpRangeClose>=0&&lastTick.time>=Range.close_time)                      // close time reached
+      ||(Range.f_high_breakout&&Range.f_low_breakout)                         // both breakout flags are true
+      ||(Range.end_time==0)                                                   // Range not calculated yet
+      ||((Range.end_time!=0&&lastTick.time>Range.end_time&&!Range.f_entry)   //there was a Range calculated but no tick inside
       &&CountOpenPosition()==0))
    {
       CalculateRange();
@@ -94,5 +95,39 @@ void OnTick()
   UpdateStopLoss();
   // check if on BIG SL Trailing Period
   CheckBIGSLTrailingPeriod();
+}
+//+------------------------------------------------------------------+
+//| Expert Test function                                             |
+//+------------------------------------------------------------------+
+double OnTester()  
+{
+   double customPerformanceMetric;  
+   
+   if(InpCustomPerfCriterium == STANDARD_PROFIT_FACTOR)
+   {
+      customPerformanceMetric = TesterStatistics(STAT_PROFIT_FACTOR);
+   }
+   else if(InpCustomPerfCriterium == MODIFIED_PROFIT_FACTOR)
+   {
+      int numTrades = ModifiedProfitFactor(customPerformanceMetric);
+      
+      //IF NUMBER OF TRADES < 250 THEN NO STATISTICAL SIGNIFICANCE, SO DISREGARD RESULTS (PROBABLE THAT GOOD 
+      //RESULTS CAUSED BY RANDOM CHANCE / LUCK, THAT WOULD NOT BE REPEATABLE IN FUTURE PERFORMANCE)
+      if(numTrades < 250)
+         customPerformanceMetric = 0.0;
+   } 
+   else if(InpCustomPerfCriterium == NO_CUSTOM_METRIC)
+   {
+      customPerformanceMetric = 0.0;
+   }
+   else
+   {
+      Print("Error: Custom Performance Criterium requested (", EnumToString(InpCustomPerfCriterium), ") not implemented in OnTester()");
+      customPerformanceMetric = 0.0;
+   }
+   
+   Print("Custom Perfromance Metric = ", DoubleToString(customPerformanceMetric, 3));
+   
+   return customPerformanceMetric;
 }
 //+------------------------------------------------------------------+

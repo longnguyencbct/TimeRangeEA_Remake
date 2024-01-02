@@ -25,7 +25,7 @@ void UpdateStopLoss(){
          //calculate stop loss
          double currPrice=type==POSITION_TYPE_BUY?lastTick.bid:lastTick.ask;
          int n           =type==POSITION_TYPE_BUY?1:-1;
-         double newSL = NormalizeDouble(currPrice-((range.high-range.low)*InpStopLoss*0.01*n),_Digits);
+         double newSL = NormalizeDouble(currPrice-((Range.high-Range.low)*InpStopLoss*0.01*n),_Digits);
          
          //check if new stop loss is closer to current price than existing stop loss
          if((newSL*n)<(currSL*n)||NormalizeDouble(MathAbs(newSL-currSL),_Digits)<_Point){
@@ -172,11 +172,11 @@ int CountSellPosition(){
    return counter;
 }
 void checkPendingPosition(){
-   if(CountBuyPosition()<1&&range.f_high_breakout){
-      range.f_high_breakout=false;
+   if(CountBuyPosition()<1&&Range.f_high_breakout){
+      Range.f_high_breakout=false;
    }
-   if(CountSellPosition()<1&&range.f_low_breakout){
-      range.f_low_breakout=false;
+   if(CountSellPosition()<1&&Range.f_low_breakout){
+      Range.f_low_breakout=false;
    }
 }
 
