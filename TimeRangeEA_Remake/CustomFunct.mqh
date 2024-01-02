@@ -2,50 +2,50 @@
 //| Custom functions                                                 |
 //+------------------------------------------------------------------+
 
-// calculate a new range
+// calculate a new Range
 void CalculateRange(){
-   // reset range variables
-   range.start_time=0;
-   range.end_time=0;
-   range.close_time=0;
-   range.high=0.0;
-   range.upper=0.0;
-   range.low=DBL_MAX;
-   range.lower=DBL_MAX;
-   range.f_entry=false;
-   range.f_high_breakout=false;
-   range.f_low_breakout=false;
+   // reset Range variables
+   Range.start_time=0;
+   Range.end_time=0;
+   Range.close_time=0;
+   Range.high=0.0;
+   Range.upper=0.0;
+   Range.low=DBL_MAX;
+   Range.lower=DBL_MAX;
+   Range.f_entry=false;
+   Range.f_high_breakout=false;
+   Range.f_low_breakout=false;
    
-   // calculate range start time
+   // calculate Range start time
    int time_cycle = 86400;
-   range.start_time = (lastTick.time - (lastTick.time%time_cycle))+InpRangeStart*60;
+   Range.start_time = (lastTick.time - (lastTick.time%time_cycle))+InpRangeStart*60;
    for(int i=0;i<8;i++){
       MqlDateTime tmp;
-      TimeToStruct(range.start_time,tmp);
+      TimeToStruct(Range.start_time,tmp);
       int dow = tmp.day_of_week;
-      if(lastTick.time>=range.start_time||(dow==6&&!InpSaturday)||(dow==0&&!InpSunday)||(dow==1&&!InpMonday)||(dow==2&&!InpTuesday)||(dow==3&&!InpWednesday)||(dow==4&&!InpThursday)||(dow==5&&!InpFriday)){
-         range.start_time+=time_cycle;
+      if(lastTick.time>=Range.start_time||(dow==6&&!InpSaturday)||(dow==0&&!InpSunday)||(dow==1&&!InpMonday)||(dow==2&&!InpTuesday)||(dow==3&&!InpWednesday)||(dow==4&&!InpThursday)||(dow==5&&!InpFriday)){
+         Range.start_time+=time_cycle;
       }
    }
-   // calculate range end time
-   range.end_time = range.start_time+InpRangeDuration*60;
+   // calculate Range end time
+   Range.end_time = Range.start_time+InpRangeDuration*60;
    for(int i=0;i<2;i++){
       MqlDateTime tmp;
-      TimeToStruct(range.end_time,tmp);
+      TimeToStruct(Range.end_time,tmp);
       int dow=tmp.day_of_week;
       if(dow==6||dow==0){
-      range.end_time+=time_cycle;
+      Range.end_time+=time_cycle;
       }
    }
-   // calculate range close
+   // calculate Range close
    if(InpRangeClose>=0){
-      range.close_time = (range.end_time - (range.end_time%time_cycle))+InpRangeClose*60;
+      Range.close_time = (Range.end_time - (Range.end_time%time_cycle))+InpRangeClose*60;
       for(int i=0;i<3;i++){
          MqlDateTime tmp;
-         TimeToStruct(range.close_time,tmp);
+         TimeToStruct(Range.close_time,tmp);
          int dow = tmp.day_of_week;
-         if(range.close_time<=range.end_time||dow==6||dow==0){
-            range.close_time+=time_cycle;
+         if(Range.close_time<=Range.end_time||dow==6||dow==0){
+            Range.close_time+=time_cycle;
          }
       }
    }
@@ -55,95 +55,95 @@ void CalculateRange(){
 
 void DrawObjects(){
    // start time
-   ObjectDelete(NULL,"range start");
-   if(range.start_time>0){
-      ObjectCreate(NULL,"range start",OBJ_VLINE,0,range.start_time,0);
-      ObjectSetString(NULL,"range start",OBJPROP_TOOLTIP,"start of the range \n"+TimeToString(range.start_time,TIME_DATE|TIME_MINUTES));
-      ObjectSetInteger(NULL,"range start",OBJPROP_COLOR,clrBlue);
-      ObjectSetInteger(NULL,"range start",OBJPROP_WIDTH,2);
-      ObjectSetInteger(NULL,"range start",OBJPROP_BACK,true);
+   ObjectDelete(NULL,"Range start");
+   if(Range.start_time>0){
+      ObjectCreate(NULL,"Range start",OBJ_VLINE,0,Range.start_time,0);
+      ObjectSetString(NULL,"Range start",OBJPROP_TOOLTIP,"start of the Range \n"+TimeToString(Range.start_time,TIME_DATE|TIME_MINUTES));
+      ObjectSetInteger(NULL,"Range start",OBJPROP_COLOR,clrBlue);
+      ObjectSetInteger(NULL,"Range start",OBJPROP_WIDTH,2);
+      ObjectSetInteger(NULL,"Range start",OBJPROP_BACK,true);
    }
    // end time
-   ObjectDelete(NULL,"range end");
-   if(range.end_time>0){
-      ObjectCreate(NULL,"range end",OBJ_VLINE,0,range.end_time,0);
-      ObjectSetString(NULL,"range end",OBJPROP_TOOLTIP,"end of the range \n"+TimeToString(range.end_time,TIME_DATE|TIME_MINUTES));
-      ObjectSetInteger(NULL,"range end",OBJPROP_COLOR,clrDarkBlue);
-      ObjectSetInteger(NULL,"range end",OBJPROP_WIDTH,2);
-      ObjectSetInteger(NULL,"range end",OBJPROP_BACK,true);
+   ObjectDelete(NULL,"Range end");
+   if(Range.end_time>0){
+      ObjectCreate(NULL,"Range end",OBJ_VLINE,0,Range.end_time,0);
+      ObjectSetString(NULL,"Range end",OBJPROP_TOOLTIP,"end of the Range \n"+TimeToString(Range.end_time,TIME_DATE|TIME_MINUTES));
+      ObjectSetInteger(NULL,"Range end",OBJPROP_COLOR,clrDarkBlue);
+      ObjectSetInteger(NULL,"Range end",OBJPROP_WIDTH,2);
+      ObjectSetInteger(NULL,"Range end",OBJPROP_BACK,true);
    }
    // close time
-   ObjectDelete(NULL,"range close");
-   if(range.close_time>0){
-      ObjectCreate(NULL,"range close",OBJ_VLINE,0,range.close_time,0);
-      ObjectSetString(NULL,"range close",OBJPROP_TOOLTIP,"close of the range \n"+TimeToString(range.close_time,TIME_DATE|TIME_MINUTES));
-      ObjectSetInteger(NULL,"range close",OBJPROP_COLOR,clrRed);
-      ObjectSetInteger(NULL,"range close",OBJPROP_WIDTH,2);
-      ObjectSetInteger(NULL,"range close",OBJPROP_BACK,true);
+   ObjectDelete(NULL,"Range close");
+   if(Range.close_time>0){
+      ObjectCreate(NULL,"Range close",OBJ_VLINE,0,Range.close_time,0);
+      ObjectSetString(NULL,"Range close",OBJPROP_TOOLTIP,"close of the Range \n"+TimeToString(Range.close_time,TIME_DATE|TIME_MINUTES));
+      ObjectSetInteger(NULL,"Range close",OBJPROP_COLOR,clrRed);
+      ObjectSetInteger(NULL,"Range close",OBJPROP_WIDTH,2);
+      ObjectSetInteger(NULL,"Range close",OBJPROP_BACK,true);
    }
    // high
-   ObjectDelete(NULL,"range high");
-   if(range.high>0){
-      ObjectCreate(NULL,"range high",OBJ_TREND,0,range.start_time,range.high,range.end_time,range.high);
-      ObjectSetString(NULL,"range high",OBJPROP_TOOLTIP,"high of the range \n"+DoubleToString(range.high,_Digits));
-      ObjectSetInteger(NULL,"range high",OBJPROP_COLOR,RangeSizeFilter()?clrBlue:clrRed);
-      ObjectSetInteger(NULL,"range high",OBJPROP_WIDTH,2);
-      ObjectSetInteger(NULL,"range high",OBJPROP_BACK,true);
+   ObjectDelete(NULL,"Range high");
+   if(Range.high>0){
+      ObjectCreate(NULL,"Range high",OBJ_TREND,0,Range.start_time,Range.high,Range.end_time,Range.high);
+      ObjectSetString(NULL,"Range high",OBJPROP_TOOLTIP,"high of the Range \n"+DoubleToString(Range.high,_Digits));
+      ObjectSetInteger(NULL,"Range high",OBJPROP_COLOR,RangeSizeFilter()?clrBlue:clrRed);
+      ObjectSetInteger(NULL,"Range high",OBJPROP_WIDTH,2);
+      ObjectSetInteger(NULL,"Range high",OBJPROP_BACK,true);
       
-      ObjectDelete(NULL,"range high ");
-      ObjectCreate(NULL,"range high ",OBJ_TREND,0,range.end_time,range.high,InpRangeClose>=0?range.close_time:INT_MAX,range.high);
-      ObjectSetString(NULL,"range high ",OBJPROP_TOOLTIP,"high of the range \n"+DoubleToString(range.high,_Digits));
-      ObjectSetInteger(NULL,"range high ",OBJPROP_COLOR,RangeSizeFilter()?clrBlue:clrRed);
-      ObjectSetInteger(NULL,"range high ",OBJPROP_BACK,true);
-      ObjectSetInteger(NULL,"range high ",OBJPROP_STYLE,STYLE_DOT);
+      ObjectDelete(NULL,"Range high ");
+      ObjectCreate(NULL,"Range high ",OBJ_TREND,0,Range.end_time,Range.high,InpRangeClose>=0?Range.close_time:INT_MAX,Range.high);
+      ObjectSetString(NULL,"Range high ",OBJPROP_TOOLTIP,"high of the Range \n"+DoubleToString(Range.high,_Digits));
+      ObjectSetInteger(NULL,"Range high ",OBJPROP_COLOR,RangeSizeFilter()?clrBlue:clrRed);
+      ObjectSetInteger(NULL,"Range high ",OBJPROP_BACK,true);
+      ObjectSetInteger(NULL,"Range high ",OBJPROP_STYLE,STYLE_DOT);
    }
    // upper
-   ObjectDelete(NULL,"range upper");
-   if(range.upper>0&&InpChangingRange){
-      ObjectCreate(NULL,"range upper",OBJ_TREND,0,range.start_time,range.upper,range.end_time,range.upper);
-      ObjectSetString(NULL,"range upper",OBJPROP_TOOLTIP,"upper of the range \n"+DoubleToString(range.upper,_Digits));
-      ObjectSetInteger(NULL,"range upper",OBJPROP_COLOR,RangeSizeFilter()?clrCyan:clrRed);
-      ObjectSetInteger(NULL,"range upper",OBJPROP_WIDTH,2);
-      ObjectSetInteger(NULL,"range upper",OBJPROP_BACK,true);
+   ObjectDelete(NULL,"Range upper");
+   if(Range.upper>0&&InpChangingRange){
+      ObjectCreate(NULL,"Range upper",OBJ_TREND,0,Range.start_time,Range.upper,Range.end_time,Range.upper);
+      ObjectSetString(NULL,"Range upper",OBJPROP_TOOLTIP,"upper of the Range \n"+DoubleToString(Range.upper,_Digits));
+      ObjectSetInteger(NULL,"Range upper",OBJPROP_COLOR,RangeSizeFilter()?clrCyan:clrRed);
+      ObjectSetInteger(NULL,"Range upper",OBJPROP_WIDTH,2);
+      ObjectSetInteger(NULL,"Range upper",OBJPROP_BACK,true);
       
-      ObjectDelete(NULL,"range upper ");
-      ObjectCreate(NULL,"range upper ",OBJ_TREND,0,range.end_time,range.upper,InpRangeClose>=0?range.close_time:INT_MAX,range.upper);
-      ObjectSetString(NULL,"range upper ",OBJPROP_TOOLTIP,"upper of the range \n"+DoubleToString(range.upper,_Digits));
-      ObjectSetInteger(NULL,"range upper ",OBJPROP_COLOR,RangeSizeFilter()?clrCyan:clrRed);
-      ObjectSetInteger(NULL,"range upper ",OBJPROP_BACK,true);
-      ObjectSetInteger(NULL,"range upper ",OBJPROP_STYLE,STYLE_DOT);
+      ObjectDelete(NULL,"Range upper ");
+      ObjectCreate(NULL,"Range upper ",OBJ_TREND,0,Range.end_time,Range.upper,InpRangeClose>=0?Range.close_time:INT_MAX,Range.upper);
+      ObjectSetString(NULL,"Range upper ",OBJPROP_TOOLTIP,"upper of the Range \n"+DoubleToString(Range.upper,_Digits));
+      ObjectSetInteger(NULL,"Range upper ",OBJPROP_COLOR,RangeSizeFilter()?clrCyan:clrRed);
+      ObjectSetInteger(NULL,"Range upper ",OBJPROP_BACK,true);
+      ObjectSetInteger(NULL,"Range upper ",OBJPROP_STYLE,STYLE_DOT);
    }
    // low
-   ObjectDelete(NULL,"range low");
-   if(range.low<DBL_MAX){
-      ObjectCreate(NULL,"range low",OBJ_TREND,0,range.start_time,range.low,range.end_time,range.low);
-      ObjectSetString(NULL,"range low",OBJPROP_TOOLTIP,"low of the range \n"+DoubleToString(range.low,_Digits));
-      ObjectSetInteger(NULL,"range low",OBJPROP_COLOR,RangeSizeFilter()?clrBlue:clrRed);
-      ObjectSetInteger(NULL,"range low",OBJPROP_WIDTH,2);
-      ObjectSetInteger(NULL,"range low",OBJPROP_BACK,true);
+   ObjectDelete(NULL,"Range low");
+   if(Range.low<DBL_MAX){
+      ObjectCreate(NULL,"Range low",OBJ_TREND,0,Range.start_time,Range.low,Range.end_time,Range.low);
+      ObjectSetString(NULL,"Range low",OBJPROP_TOOLTIP,"low of the Range \n"+DoubleToString(Range.low,_Digits));
+      ObjectSetInteger(NULL,"Range low",OBJPROP_COLOR,RangeSizeFilter()?clrBlue:clrRed);
+      ObjectSetInteger(NULL,"Range low",OBJPROP_WIDTH,2);
+      ObjectSetInteger(NULL,"Range low",OBJPROP_BACK,true);
       
-      ObjectDelete(NULL,"range low ");
-      ObjectCreate(NULL,"range low ",OBJ_TREND,0,range.end_time,range.low,InpRangeClose>=0?range.close_time:INT_MAX,range.low);
-      ObjectSetString(NULL,"range low ",OBJPROP_TOOLTIP,"low of the range \n"+DoubleToString(range.low,_Digits));
-      ObjectSetInteger(NULL,"range low ",OBJPROP_COLOR,RangeSizeFilter()?clrBlue:clrRed);
-      ObjectSetInteger(NULL,"range low ",OBJPROP_BACK,true);
-      ObjectSetInteger(NULL,"range low ",OBJPROP_STYLE,STYLE_DOT);
+      ObjectDelete(NULL,"Range low ");
+      ObjectCreate(NULL,"Range low ",OBJ_TREND,0,Range.end_time,Range.low,InpRangeClose>=0?Range.close_time:INT_MAX,Range.low);
+      ObjectSetString(NULL,"Range low ",OBJPROP_TOOLTIP,"low of the Range \n"+DoubleToString(Range.low,_Digits));
+      ObjectSetInteger(NULL,"Range low ",OBJPROP_COLOR,RangeSizeFilter()?clrBlue:clrRed);
+      ObjectSetInteger(NULL,"Range low ",OBJPROP_BACK,true);
+      ObjectSetInteger(NULL,"Range low ",OBJPROP_STYLE,STYLE_DOT);
    }
    // lower
-   ObjectDelete(NULL,"range lower");
-   if(range.lower<DBL_MAX&&InpChangingRange){
-      ObjectCreate(NULL,"range lower",OBJ_TREND,0,range.start_time,range.lower,range.end_time,range.lower);
-      ObjectSetString(NULL,"range lower",OBJPROP_TOOLTIP,"lower of the range \n"+DoubleToString(range.lower,_Digits));
-      ObjectSetInteger(NULL,"range lower",OBJPROP_COLOR,RangeSizeFilter()?clrCyan:clrRed);
-      ObjectSetInteger(NULL,"range lower",OBJPROP_WIDTH,2);
-      ObjectSetInteger(NULL,"range lower",OBJPROP_BACK,true);
+   ObjectDelete(NULL,"Range lower");
+   if(Range.lower<DBL_MAX&&InpChangingRange){
+      ObjectCreate(NULL,"Range lower",OBJ_TREND,0,Range.start_time,Range.lower,Range.end_time,Range.lower);
+      ObjectSetString(NULL,"Range lower",OBJPROP_TOOLTIP,"lower of the Range \n"+DoubleToString(Range.lower,_Digits));
+      ObjectSetInteger(NULL,"Range lower",OBJPROP_COLOR,RangeSizeFilter()?clrCyan:clrRed);
+      ObjectSetInteger(NULL,"Range lower",OBJPROP_WIDTH,2);
+      ObjectSetInteger(NULL,"Range lower",OBJPROP_BACK,true);
       
-      ObjectDelete(NULL,"range lower ");
-      ObjectCreate(NULL,"range lower ",OBJ_TREND,0,range.end_time,range.lower,InpRangeClose>=0?range.close_time:INT_MAX,range.lower);
-      ObjectSetString(NULL,"range lower ",OBJPROP_TOOLTIP,"lower of the range \n"+DoubleToString(range.lower,_Digits));
-      ObjectSetInteger(NULL,"range lower ",OBJPROP_COLOR,RangeSizeFilter()?clrCyan:clrRed);
-      ObjectSetInteger(NULL,"range lower ",OBJPROP_BACK,true);
-      ObjectSetInteger(NULL,"range lower ",OBJPROP_STYLE,STYLE_DOT);
+      ObjectDelete(NULL,"Range lower ");
+      ObjectCreate(NULL,"Range lower ",OBJ_TREND,0,Range.end_time,Range.lower,InpRangeClose>=0?Range.close_time:INT_MAX,Range.lower);
+      ObjectSetString(NULL,"Range lower ",OBJPROP_TOOLTIP,"lower of the Range \n"+DoubleToString(Range.lower,_Digits));
+      ObjectSetInteger(NULL,"Range lower ",OBJPROP_COLOR,RangeSizeFilter()?clrCyan:clrRed);
+      ObjectSetInteger(NULL,"Range lower ",OBJPROP_BACK,true);
+      ObjectSetInteger(NULL,"Range lower ",OBJPROP_STYLE,STYLE_DOT);
    }
    // refress chart
    ChartRedraw();
@@ -152,37 +152,37 @@ void DrawObjects(){
 }
 
 void CheckBreakouts(){
-   // check if we are after the range end
-   if(lastTick.time >=range.end_time&&range.end_time>0&&range.f_entry){
+   // check if we are after the Range end
+   if(lastTick.time >=Range.end_time&&Range.end_time>0&&Range.f_entry){
       // check for high breakout
-      if(!range.f_high_breakout&&
+      if(!Range.f_high_breakout&&
             (
-               (lastTick.ask>=range.upper&&prevTick.ask<range.upper&&InpChangingRange)||
-               (lastTick.ask>=range.high&&prevTick.ask<range.high&&!InpChangingRange)
+               (lastTick.ask>=Range.upper&&prevTick.ask<Range.upper&&InpChangingRange)||
+               (lastTick.ask>=Range.high&&prevTick.ask<Range.high&&!InpChangingRange)
             )
         ){
-         range.f_high_breakout=true;
-         if(InpBreakoutMode==ONE_SIGNAL){range.f_low_breakout=true;}
+         Range.f_high_breakout=true;
+         if(InpBreakoutMode==ONE_SIGNAL){Range.f_low_breakout=true;}
          if(!RangeSizeFilter()){// if size is big, revert open
             if(!InpRevertOpenRangeSize){return;}
             if(CountSellPosition()>0){return;}
             // calculate sl tp
-            double sl= InpStopLoss==0?0:NormalizeDouble(lastTick.ask + (range.high-range.low)*InpStopLoss*0.01,_Digits);
-            double tp= InpTakeProfit==0?0:NormalizeDouble(lastTick.ask - (range.high-range.low)*InpTakeProfit*0.01,_Digits);
+            double sl= InpStopLoss==0?0:NormalizeDouble(lastTick.ask + (Range.high-Range.low)*InpStopLoss*0.01,_Digits);
+            double tp= InpTakeProfit==0?0:NormalizeDouble(lastTick.ask - (Range.high-Range.low)*InpTakeProfit*0.01,_Digits);
             
             //calculate lots
             double lots;
             if(!CalculateLots(sl-lastTick.ask,lots)){return;}
             
             // open a sell position
-            trade.PositionOpen(_Symbol,ORDER_TYPE_SELL,lots,lastTick.bid,sl,tp,"Time range EA");
+            trade.PositionOpen(_Symbol,ORDER_TYPE_SELL,lots,lastTick.bid,sl,tp,"Time Range EA");
             currentSellMinutes=0;
          }
          else{
             if(CountBuyPosition()>0){return;}
             // calculate sl tp
-            double sl= InpStopLoss==0?0:NormalizeDouble(lastTick.bid - (range.high-range.low)*InpStopLoss*0.01,_Digits);
-            double tp= InpTakeProfit==0?0:NormalizeDouble(lastTick.bid + (range.high-range.low)*InpTakeProfit*0.01,_Digits);
+            double sl= InpStopLoss==0?0:NormalizeDouble(lastTick.bid - (Range.high-Range.low)*InpStopLoss*0.01,_Digits);
+            double tp= InpTakeProfit==0?0:NormalizeDouble(lastTick.bid + (Range.high-Range.low)*InpTakeProfit*0.01,_Digits);
             
             
             //calculate lots
@@ -190,25 +190,25 @@ void CheckBreakouts(){
             if(!CalculateLots(lastTick.bid-sl,lots)){return;}
             
             // open a buy position
-            trade.PositionOpen(_Symbol,ORDER_TYPE_BUY,lots,lastTick.ask,sl,tp,"Time range EA");
+            trade.PositionOpen(_Symbol,ORDER_TYPE_BUY,lots,lastTick.ask,sl,tp,"Time Range EA");
             currentBuyMinutes=0;
          }
       }
       // check for low breakout
-      if(!range.f_low_breakout&&
+      if(!Range.f_low_breakout&&
             (
-               (lastTick.bid<=range.lower&&prevTick.bid>range.lower&&InpChangingRange)||
-               (lastTick.bid<=range.low&&prevTick.bid>range.low&&!InpChangingRange)
+               (lastTick.bid<=Range.lower&&prevTick.bid>Range.lower&&InpChangingRange)||
+               (lastTick.bid<=Range.low&&prevTick.bid>Range.low&&!InpChangingRange)
             )
         ){
-         range.f_low_breakout=true;
-         if(InpBreakoutMode==ONE_SIGNAL){range.f_high_breakout=true;}
+         Range.f_low_breakout=true;
+         if(InpBreakoutMode==ONE_SIGNAL){Range.f_high_breakout=true;}
          if(!RangeSizeFilter()){
             if(!InpRevertOpenRangeSize){return;}
             if(CountBuyPosition()>0){return;}
             // calculate sl tp
-            double sl= InpStopLoss==0?0:NormalizeDouble(lastTick.bid - (range.high-range.low)*InpStopLoss*0.01,_Digits);
-            double tp= InpTakeProfit==0?0:NormalizeDouble(lastTick.bid + (range.high-range.low)*InpTakeProfit*0.01,_Digits);
+            double sl= InpStopLoss==0?0:NormalizeDouble(lastTick.bid - (Range.high-Range.low)*InpStopLoss*0.01,_Digits);
+            double tp= InpTakeProfit==0?0:NormalizeDouble(lastTick.bid + (Range.high-Range.low)*InpTakeProfit*0.01,_Digits);
             
             
             //calculate lots
@@ -216,20 +216,20 @@ void CheckBreakouts(){
             if(!CalculateLots(lastTick.bid-sl,lots)){return;}
             
             // open a buy position
-            trade.PositionOpen(_Symbol,ORDER_TYPE_BUY,lots,lastTick.ask,sl,tp,"Time range EA");
+            trade.PositionOpen(_Symbol,ORDER_TYPE_BUY,lots,lastTick.ask,sl,tp,"Time Range EA");
             currentBuyMinutes=0;
          }else{
             if(CountSellPosition()>0){return;}
             // calculate sl tp
-            double sl= InpStopLoss==0?0:NormalizeDouble(lastTick.ask + (range.high-range.low)*InpStopLoss*0.01,_Digits);
-            double tp= InpTakeProfit==0?0:NormalizeDouble(lastTick.ask - (range.high-range.low)*InpTakeProfit*0.01,_Digits);
+            double sl= InpStopLoss==0?0:NormalizeDouble(lastTick.ask + (Range.high-Range.low)*InpStopLoss*0.01,_Digits);
+            double tp= InpTakeProfit==0?0:NormalizeDouble(lastTick.ask - (Range.high-Range.low)*InpTakeProfit*0.01,_Digits);
             
             //calculate lots
             double lots;
             if(!CalculateLots(sl-lastTick.ask,lots)){return;}
             
             // open a sell position
-            trade.PositionOpen(_Symbol,ORDER_TYPE_SELL,lots,lastTick.bid,sl,tp,"Time range EA");
+            trade.PositionOpen(_Symbol,ORDER_TYPE_SELL,lots,lastTick.bid,sl,tp,"Time Range EA");
             currentSellMinutes=0;
          }
       }
@@ -237,7 +237,7 @@ void CheckBreakouts(){
 }
 
 bool RangeSizeFilter(){
-   if(InpRangeSizeFilter>0&&(range.high-range.low)>InpRangeSizeFilter*_Point){
+   if(InpRangeSizeFilter>0&&(Range.high-Range.low)>InpRangeSizeFilter*_Point){
       return false;
    }
    return true;

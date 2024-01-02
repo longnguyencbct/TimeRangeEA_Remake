@@ -2,14 +2,14 @@
 //| Global variables                                                 |
 //+------------------------------------------------------------------+
 struct   RANGE_STRUCT{
-   datetime start_time; //start of the range
-   datetime end_time; // end of the range
+   datetime start_time; //start of the Range
+   datetime end_time; // end of the Range
    datetime close_time; // close time
-   double high; //high of the range
-   double upper; //upper of the range
-   double low; // low of the range
-   double lower; // lower of the range
-   bool f_entry; // flag if we are inside the range
+   double high; //high of the Range
+   double upper; //upper of the Range
+   double low; // low of the Range
+   double lower; // lower of the Range
+   bool f_entry; // flag if we are inside the Range
    bool f_high_breakout; // flag if a high breakout occured 
    bool f_low_breakout; // flag if a low breakout occured 
    
@@ -27,7 +27,7 @@ struct   RANGE_STRUCT{
    {};
 };
 
-RANGE_STRUCT range;
+RANGE_STRUCT Range;
 MqlTick prevTick, lastTick;
 CTrade trade;
 int currentBuyMinutes;
