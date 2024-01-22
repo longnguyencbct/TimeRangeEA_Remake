@@ -6,9 +6,7 @@ struct   RANGE_STRUCT{
    datetime end_time; // end of the Range
    datetime close_time; // close time
    double high; //high of the Range
-   double upper; //upper of the Range
    double low; // low of the Range
-   double lower; // lower of the Range
    bool f_entry; // flag if we are inside the Range
    bool f_high_breakout; // flag if a high breakout occured 
    bool f_low_breakout; // flag if a low breakout occured 
@@ -18,9 +16,7 @@ struct   RANGE_STRUCT{
    end_time(0),
    close_time(0),
    high(0),
-   upper(0),
    low(DBL_MAX),
-   lower(DBL_MAX),
    f_entry(false),
    f_high_breakout(false),
    f_low_breakout(false)

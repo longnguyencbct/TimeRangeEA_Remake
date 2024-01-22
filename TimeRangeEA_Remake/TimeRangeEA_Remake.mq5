@@ -67,8 +67,6 @@ void OnTick()
    }
    double cp=(lastTick.ask+lastTick.bid)/2;
    
-   Range.lower=  mid+(cp-mid)*InpChangingRangeAmplifier/100       -(Range.high-Range.low)/2;
-   Range.upper=  mid+(cp-mid)*InpChangingRangeAmplifier/100       +(Range.high-Range.low)/2;
    //DrawObjects();
   }
   if(lastTick.time==Range.end_time){

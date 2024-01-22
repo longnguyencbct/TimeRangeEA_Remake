@@ -9,9 +9,7 @@ void CalculateRange(){
    Range.end_time=0;
    Range.close_time=0;
    Range.high=0.0;
-   Range.upper=0.0;
    Range.low=DBL_MAX;
-   Range.lower=DBL_MAX;
    Range.f_entry=false;
    Range.f_high_breakout=false;
    Range.f_low_breakout=false;
@@ -23,7 +21,7 @@ void CalculateRange(){
       MqlDateTime tmp;
       TimeToStruct(Range.start_time,tmp);
       int dow = tmp.day_of_week;
-      if(lastTick.time>=Range.start_time||(dow==6&&!InpSaturday)||(dow==0&&!InpSunday)||(dow==1&&!InpMonday)||(dow==2&&!InpTuesday)||(dow==3&&!InpWednesday)||(dow==4&&!InpThursday)||(dow==5&&!InpFriday)){
+      if(lastTick.time>=Range.start_time){
          Range.start_time+=time_cycle;
       }
    }
@@ -97,22 +95,7 @@ void DrawObjects(){
       ObjectSetInteger(NULL,"Range high ",OBJPROP_BACK,true);
       ObjectSetInteger(NULL,"Range high ",OBJPROP_STYLE,STYLE_DOT);
    }
-   // upper
-   ObjectDelete(NULL,"Range upper");
-   if(Range.upper>0&&InpChangingRange){
-      ObjectCreate(NULL,"Range upper",OBJ_TREND,0,Range.start_time,Range.upper,Range.end_time,Range.upper);
-      ObjectSetString(NULL,"Range upper",OBJPROP_TOOLTIP,"upper of the Range \n"+DoubleToString(Range.upper,_Digits));
-      ObjectSetInteger(NULL,"Range upper",OBJPROP_COLOR,RangeSizeFilter()?clrCyan:clrRed);
-      ObjectSetInteger(NULL,"Range upper",OBJPROP_WIDTH,2);
-      ObjectSetInteger(NULL,"Range upper",OBJPROP_BACK,true);
-      
-      ObjectDelete(NULL,"Range upper ");
-      ObjectCreate(NULL,"Range upper ",OBJ_TREND,0,Range.end_time,Range.upper,InpRangeClose>=0?Range.close_time:INT_MAX,Range.upper);
-      ObjectSetString(NULL,"Range upper ",OBJPROP_TOOLTIP,"upper of the Range \n"+DoubleToString(Range.upper,_Digits));
-      ObjectSetInteger(NULL,"Range upper ",OBJPROP_COLOR,RangeSizeFilter()?clrCyan:clrRed);
-      ObjectSetInteger(NULL,"Range upper ",OBJPROP_BACK,true);
-      ObjectSetInteger(NULL,"Range upper ",OBJPROP_STYLE,STYLE_DOT);
-   }
+   
    // low
    ObjectDelete(NULL,"Range low");
    if(Range.low<DBL_MAX){
@@ -129,22 +112,7 @@ void DrawObjects(){
       ObjectSetInteger(NULL,"Range low ",OBJPROP_BACK,true);
       ObjectSetInteger(NULL,"Range low ",OBJPROP_STYLE,STYLE_DOT);
    }
-   // lower
-   ObjectDelete(NULL,"Range lower");
-   if(Range.lower<DBL_MAX&&InpChangingRange){
-      ObjectCreate(NULL,"Range lower",OBJ_TREND,0,Range.start_time,Range.lower,Range.end_time,Range.lower);
-      ObjectSetString(NULL,"Range lower",OBJPROP_TOOLTIP,"lower of the Range \n"+DoubleToString(Range.lower,_Digits));
-      ObjectSetInteger(NULL,"Range lower",OBJPROP_COLOR,RangeSizeFilter()?clrCyan:clrRed);
-      ObjectSetInteger(NULL,"Range lower",OBJPROP_WIDTH,2);
-      ObjectSetInteger(NULL,"Range lower",OBJPROP_BACK,true);
-      
-      ObjectDelete(NULL,"Range lower ");
-      ObjectCreate(NULL,"Range lower ",OBJ_TREND,0,Range.end_time,Range.lower,InpRangeClose>=0?Range.close_time:INT_MAX,Range.lower);
-      ObjectSetString(NULL,"Range lower ",OBJPROP_TOOLTIP,"lower of the Range \n"+DoubleToString(Range.lower,_Digits));
-      ObjectSetInteger(NULL,"Range lower ",OBJPROP_COLOR,RangeSizeFilter()?clrCyan:clrRed);
-      ObjectSetInteger(NULL,"Range lower ",OBJPROP_BACK,true);
-      ObjectSetInteger(NULL,"Range lower ",OBJPROP_STYLE,STYLE_DOT);
-   }
+   
    // refress chart
    ChartRedraw();
 
@@ -157,8 +125,7 @@ void CheckBreakouts(){
       // check for high breakout
       if(!Range.f_high_breakout&&
             (
-               (lastTick.ask>=Range.upper&&prevTick.ask<Range.upper&&InpChangingRange)||
-               (lastTick.ask>=Range.high&&prevTick.ask<Range.high&&!InpChangingRange)
+               (lastTick.ask>=Range.high&&prevTick.ask<Range.high)
             )
         ){
          Range.f_high_breakout=true;
@@ -197,8 +164,7 @@ void CheckBreakouts(){
       // check for low breakout
       if(!Range.f_low_breakout&&
             (
-               (lastTick.bid<=Range.lower&&prevTick.bid>Range.lower&&InpChangingRange)||
-               (lastTick.bid<=Range.low&&prevTick.bid>Range.low&&!InpChangingRange)
+               (lastTick.bid<=Range.low&&prevTick.bid>Range.low)
             )
         ){
          Range.f_low_breakout=true;
