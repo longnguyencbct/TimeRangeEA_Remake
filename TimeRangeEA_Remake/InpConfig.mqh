@@ -40,8 +40,6 @@ input int InpRangeDuration=120; // Range duration in minutes
 input int InpRangeClose=1200; //Range close time in minutes (-1=off)
 input int InpRangeSizeFilter=500; //Range size filter in points (0=off)
 input bool InpRevertOpenRangeSize=false; // reverting open if size > size filter?
-input bool InpChangingRange=true; // changing Range's upper and lower respect to currPrice?
-input int InpChangingRangeAmplifier=100; //(0=off)change by how much % of diff of currPrice to mid
 
 enum  BREAKOUT_MODE_ENUM{
    ONE_SIGNAL, // one breakout per Range
@@ -49,14 +47,6 @@ enum  BREAKOUT_MODE_ENUM{
 };
 input BREAKOUT_MODE_ENUM InpBreakoutMode = ONE_SIGNAL; // breakout mode
 
-input group "==== DAY OF WEEK FILTER ===="
-input bool InpMonday=true; // Range on Monday
-input bool InpTuesday=true; // Range on Tuesday
-input bool InpWednesday=true; // Range on Wednesday
-input bool InpThursday=true; // Range on Thursday
-input bool InpFriday=true; // Range on Friday
-input bool InpSaturday=true; // Range on Saturday
-input bool InpSunday=true; // Range on Sunday
 
 bool CheckInputs(){
    if(InpMagicNumber<=0){
@@ -104,10 +94,6 @@ bool CheckInputs(){
       return false;
    } 
    
-   if(InpMonday+InpTuesday+InpWednesday+InpThursday+InpFriday==0){
-      Alert("Range is prohibited on all days oh the week");
-      return false;
-   }
    
    if(InpBIGSLTrailingPeriod<=0){
       Alert("Scailing down sl period is <= 0");
@@ -116,9 +102,6 @@ bool CheckInputs(){
    if(InpRangeSizeFilter<0){
       Alert("Range Size Filter <0");
       return false;
-   }
-   if(InpChangingRangeAmplifier<0){
-      Alert("InpChangingRangeAmplifier<0");
    }
    return true;
 }
